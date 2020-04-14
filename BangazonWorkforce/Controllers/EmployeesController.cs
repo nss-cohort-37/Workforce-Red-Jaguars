@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using BangazonWorkforce.Models;
+using BangazonWorkforce.Models.ViewModel;
 //using BangazonWorkforce.Models.ViewModels;
 
 namespace BangazonWorkforce.Controllers
@@ -75,23 +76,52 @@ namespace BangazonWorkforce.Controllers
         // GET: Employees/Create
         public ActionResult Create()
         {
-            return View();
+            var departmentOptions = GetDepartmentOptions();
+            var computerOptions = GetComputerOptions();
+            var viewModel = new EmployeeViewModel()
+            {
+                DepartmentOptions = departmentOptions,
+                ComputerOptions = computerOptions
+            };
+            return View(viewModel);
         }
 
         // POST: Employees/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(EmployeeViewModel employee)
         {
             try
             {
-                // TODO: Add insert logic here
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"INSERT INTO Employee (FirstName, LastName, DepartmentId, Email, IsSupervisor, ComputerId)
+                                            OUTPUT INSERTED.Id
+                                            VALUES (@firstName, @lastName, @departmentId, @email, @isSupervisor, @computerId)";
 
-                return RedirectToAction(nameof(Index));
+                        cmd.Parameters.Add(new SqlParameter("@firstName", employee.FirstName));
+                        cmd.Parameters.Add(new SqlParameter("@lastName", employee.LastName));
+                        cmd.Parameters.Add(new SqlParameter("@departmentId", employee.DepartmentId));
+                        cmd.Parameters.Add(new SqlParameter("@email", employee.Email));
+                        cmd.Parameters.Add(new SqlParameter("@isSupervisor", employee.IsSupervisor));
+                        cmd.Parameters.Add(new SqlParameter("@computerId", employee.ComputerId));
+
+
+                        var id = (int)cmd.ExecuteScalar();
+                        employee.Id = id;
+
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
+
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(employee);
             }
         }
 
@@ -138,6 +168,64 @@ namespace BangazonWorkforce.Controllers
             catch
             {
                 return View();
+            }
+        }
+        private List<SelectListItem> GetDepartmentOptions()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Id, Name FROM Department";
+
+                    var reader = cmd.ExecuteReader();
+                    var options = new List<SelectListItem>();
+
+                    while (reader.Read())
+                    {
+                        var option = new SelectListItem()
+                        {
+                            Text = reader.GetString(reader.GetOrdinal("Name")),
+                            Value = reader.GetInt32(reader.GetOrdinal("Id")).ToString()
+                        };
+
+                        options.Add(option);
+
+                    }
+                    reader.Close();
+                    return options;
+                }
+            }
+        }
+        private List<SelectListItem> GetComputerOptions()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT CONCAT(c.Make, ' ', c.Model) AS ComputerInfo, c.Id, e.FirstName FROM Computer c
+                                        LEFT JOIN Employee e ON e.ComputerId = c.Id
+                                        WHERE c.DecomissionDate IS NULL AND e.ComputerId IS NULL";
+
+                    var reader = cmd.ExecuteReader();
+                    var options = new List<SelectListItem>();
+
+                    while (reader.Read())
+                    {
+                        var option = new SelectListItem()
+                        {
+                            Text = reader.GetString(reader.GetOrdinal("ComputerInfo")),
+                            Value = reader.GetInt32(reader.GetOrdinal("Id")).ToString()
+                        };
+
+                        options.Add(option);
+
+                    }
+                    reader.Close();
+                    return options;
+                }
             }
         }
     }
