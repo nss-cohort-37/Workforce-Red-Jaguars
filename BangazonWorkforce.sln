@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29920.165
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BangazonWorkforce", "BangazonWorkforce\BangazonWorkforce.csproj", "{10AF37CB-8C24-4556-A64B-14D2C152661E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10AF37CB-8C24-4556-A64B-14D2C152661E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10AF37CB-8C24-4556-A64B-14D2C152661E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10AF37CB-8C24-4556-A64B-14D2C152661E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10AF37CB-8C24-4556-A64B-14D2C152661E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FA1EE9FF-D441-4645-92B6-52D4CFA3295C}
+	EndGlobalSection
+EndGlobal
