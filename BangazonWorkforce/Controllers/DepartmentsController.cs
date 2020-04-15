@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BangazonWorkforce.Models;
+using BangazonWorkforce.Models.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -64,7 +65,7 @@ namespace BangazonWorkforce.Controllers
         // GET: Department/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            return View(GetDepartmentEmployeesViewModel(id));
         }
 
         // GET: Department/Create
@@ -150,6 +151,55 @@ namespace BangazonWorkforce.Controllers
             catch
             {
                 return View();
+            }
+        }
+
+        private DepartmentViewModel GetDepartmentEmployeesViewModel(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT d.Id, d.[Name], d.Budget, 
+                                        e.Id AS EmployeeId, e.FirstName, e.LastName, e.DepartmentId, e.Email, e.IsSupervisor, e.ComputerId
+                                        FROM Department d
+                                        LEFT JOIN Employee e ON d.Id = e.DepartmentId
+                                        WHERE d.Id = @id";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+                    
+                    var reader = cmd.ExecuteReader();
+                    
+                    DepartmentViewModel department = null;
+                    
+                    while (reader.Read())
+                    {
+                        if (department == null)
+                        {
+                            department = new DepartmentViewModel
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                Budget = reader.GetInt32(reader.GetOrdinal("Budget")),
+                                Employees = new List<Employee>()
+                            };
+                        }
+
+                        department.Employees.Add(new Employee()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("EmployeeId")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId")),
+                            Email = reader.GetString(reader.GetOrdinal("Email")),
+                            IsSupervisor = reader.GetBoolean(reader.GetOrdinal("IsSupervisor")),
+                            ComputerId = reader.GetInt32(reader.GetOrdinal("ComputerId"))
+                        });
+                    }    
+                    reader.Close();
+
+                    return department;
+                }
             }
         }
     }
