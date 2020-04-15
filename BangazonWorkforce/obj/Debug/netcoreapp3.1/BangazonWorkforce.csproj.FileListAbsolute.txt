@@ -472,3 +472,5 @@ C:\Users\gilde\workspace\csharp\Workforce-Red-Jaguars\BangazonWorkforce\obj\Debu
 C:\Users\gilde\workspace\csharp\Workforce-Red-Jaguars\BangazonWorkforce\obj\Debug\netcoreapp3.1\BangazonWorkforce.pdb
 C:\Users\gilde\workspace\csharp\Workforce-Red-Jaguars\BangazonWorkforce\obj\Debug\netcoreapp3.1\BangazonWorkforce.genruntimeconfig.cache
 C:\Users\gilde\workspace\csharp\Workforce-Red-Jaguars\BangazonWorkforce\obj\Debug\netcoreapp3.1\Razor\Views\Employees\Create.cshtml.g.cs
+C:\Users\gilde\workspace\csharp\Workforce-Red-Jaguars\BangazonWorkforce\obj\Debug\netcoreapp3.1\BangazonWorkforce.csprojAssemblyReference.cache
+C:\Users\gilde\workspace\csharp\Workforce-Red-Jaguars\BangazonWorkforce\obj\Debug\netcoreapp3.1\Razor\Views\Employees\Edit.cshtml.g.cs
