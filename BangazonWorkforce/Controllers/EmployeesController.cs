@@ -284,8 +284,12 @@ namespace BangazonWorkforce.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT e.Id, e.FirstName, e.LastName, e.DepartmentId, e.Email, e.IsSupervisor, e.ComputerId, d.[Name] AS DepartmentName, d.Budget FROM Employee e
+                    cmd.CommandText = @"SELECT e.Id, e.FirstName, e.LastName, e.DepartmentId, e.Email, e.IsSupervisor, e.ComputerId, 
+                                        d.[Name] AS DepartmentName, d.Budget, 
+                                        c.PurchaseDate, c.DecomissionDate, c.Make, c.Model 
+                                        FROM Employee e
                                         LEFT JOIN Department d ON d.Id = e.DepartmentId
+                                        LEFT JOIN Computer c ON c.Id = e.ComputerId
                                         WHERE e.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     var reader = cmd.ExecuteReader();
@@ -305,9 +309,20 @@ namespace BangazonWorkforce.Controllers
                             },
                             Email = reader.GetString(reader.GetOrdinal("Email")),
                             IsSupervisor = reader.GetBoolean(reader.GetOrdinal("IsSupervisor")),
-                            ComputerId = reader.GetInt32(reader.GetOrdinal("ComputerId"))
-
+                            ComputerId = reader.GetInt32(reader.GetOrdinal("ComputerId")),
+                            Computer = new Computer()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
+                                Make = reader.GetString(reader.GetOrdinal("Make")),
+                                Model = reader.GetString(reader.GetOrdinal("Model"))
+                            }
                         };
+                        
+                        if (!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
+                        {
+                            employee.Computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
+                        }
                     }
                     reader.Close();
                     return employee;
