@@ -16,16 +16,13 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>
             <th>
+                Make & Model
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.PurchaseDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DecomissionDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Make)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Model)
             </th>
             <th></th>
         </tr>
@@ -37,16 +34,13 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Make) @Html.DisplayFor(modelItem => item.Model)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.PurchaseDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DecomissionDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Make)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Model)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
