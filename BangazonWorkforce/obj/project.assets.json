@@ -7976,19 +7976,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\gilde\\.nuget\\packages\\": {}
+    "C:\\Users\\janse\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\gilde\\workspace\\csharp\\Workforce-Red-Jaguars\\BangazonWorkforce\\BangazonWorkforce.csproj",
+      "projectUniqueName": "C:\\Users\\janse\\workspace\\Workforce-Red-Jaguars\\BangazonWorkforce\\BangazonWorkforce.csproj",
       "projectName": "BangazonWorkforce",
-      "projectPath": "C:\\Users\\gilde\\workspace\\csharp\\Workforce-Red-Jaguars\\BangazonWorkforce\\BangazonWorkforce.csproj",
-      "packagesPath": "C:\\Users\\gilde\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\gilde\\workspace\\csharp\\Workforce-Red-Jaguars\\BangazonWorkforce\\obj\\",
+      "projectPath": "C:\\Users\\janse\\workspace\\Workforce-Red-Jaguars\\BangazonWorkforce\\BangazonWorkforce.csproj",
+      "packagesPath": "C:\\Users\\janse\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\janse\\workspace\\Workforce-Red-Jaguars\\BangazonWorkforce\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\gilde\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\janse\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -8043,7 +8043,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.200\\RuntimeIdentifierGraph.json"
       }
     }
   }
