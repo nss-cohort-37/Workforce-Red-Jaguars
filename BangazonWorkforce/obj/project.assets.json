@@ -5456,19 +5456,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\janse\\.nuget\\packages\\": {}
+    "C:\\Users\\rebec\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\janse\\workspace\\BangazonWorkforce\\BangazonWorkforce\\BangazonWorkforce.csproj",
+      "projectUniqueName": "C:\\Users\\rebec\\source\\repos\\Workforce-Red-Jaguars\\BangazonWorkforce\\BangazonWorkforce.csproj",
       "projectName": "BangazonWorkforce",
-      "projectPath": "C:\\Users\\janse\\workspace\\BangazonWorkforce\\BangazonWorkforce\\BangazonWorkforce.csproj",
-      "packagesPath": "C:\\Users\\janse\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\janse\\workspace\\BangazonWorkforce\\BangazonWorkforce\\obj\\",
+      "projectPath": "C:\\Users\\rebec\\source\\repos\\Workforce-Red-Jaguars\\BangazonWorkforce\\BangazonWorkforce.csproj",
+      "packagesPath": "C:\\Users\\rebec\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\rebec\\source\\repos\\Workforce-Red-Jaguars\\BangazonWorkforce\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\janse\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\rebec\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
