@@ -70,7 +70,8 @@ namespace BangazonWorkforce.Controllers
         // GET: Employees/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            var employee = GetEmployeeById(id);
+            return View(employee);
         }
 
         // GET: Employees/Create
