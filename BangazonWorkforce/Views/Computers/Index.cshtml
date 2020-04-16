@@ -34,7 +34,7 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Make) @Html.DisplayFor(modelItem => item.Model)
+                @Html.ActionLink(item.Make + " " + item.Model, "Details", new { id = item.Id })
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PurchaseDate)
