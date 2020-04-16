@@ -6,6 +6,7 @@ using BangazonWorkforce.Models;
 using BangazonWorkforce.Models.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
@@ -75,13 +76,18 @@ namespace BangazonWorkforce.Controllers
         // GET: Computers/Create
         public ActionResult Create()
         {
-            return View();
+            var employeeOptions = GetEmployeeOptions();
+            var viewModel = new ComputerViewModel()
+            {
+                EmployeeOptions = employeeOptions
+            };
+            return View(viewModel);
         }
 
         // POST: Computers/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Computer computer)
+        public ActionResult Create(ComputerViewModel computer)
         {
             try
             {
@@ -247,6 +253,34 @@ namespace BangazonWorkforce.Controllers
                     }
                     reader.Close();
                     return computer;
+                }
+            }
+        }
+        private List<SelectListItem> GetEmployeeOptions()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Id, CONCAT(FirstName, ' ', LastName) AS Name FROM Employee";
+
+                    var reader = cmd.ExecuteReader();
+                    var options = new List<SelectListItem>();
+
+                    while (reader.Read())
+                    {
+                        var option = new SelectListItem()
+                        {
+                            Text = reader.GetString(reader.GetOrdinal("Name")),
+                            Value = reader.GetInt32(reader.GetOrdinal("Id")).ToString()
+                        };
+
+                        options.Add(option);
+
+                    }
+                    reader.Close();
+                    return options;
                 }
             }
         }
