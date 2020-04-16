@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BangazonWorkforce.Models;
+using BangazonWorkforce.Models.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -138,8 +139,45 @@ namespace BangazonWorkforce.Controllers
         // GET: Computers/Delete/5
         public ActionResult Delete(int id)
         {
-            var computer = GetComputerById(id);
-            return View(computer);
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, e.Id AS EmployeeId
+                                        FROM Computer c
+                                        LEFT JOIN Employee e ON c.Id = e.ComputerId
+                                        WHERE c.Id = @id";
+
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                    var reader = cmd.ExecuteReader();
+                    Computer computer = null;
+
+                    if (reader.Read())
+                    {
+                        if (!reader.IsDBNull(reader.GetOrdinal("EmployeeId")))
+                        {
+                            return NotFound();
+                        }
+
+                        computer = new Computer
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
+                            Make = reader.GetString(reader.GetOrdinal("Make")),
+                            Model = reader.GetString(reader.GetOrdinal("Model"))
+                        };
+
+                        if (!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
+                        {
+                            computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
+                        }
+                    }
+                    reader.Close();
+                    return View(computer);
+                }
+            }
         }
 
         // POST: Computers/Delete/5
@@ -154,7 +192,7 @@ namespace BangazonWorkforce.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = "DELETE FROM Computer WHERE Id = @id";
+                        cmd.CommandText = @"DELETE FROM Computer WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
                         cmd.ExecuteNonQuery();
@@ -169,25 +207,27 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
-        private Computer GetComputerById(int id)
+        private ComputerViewModel GetComputerById(int id)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, PurchaseDate, DecomissionDate, Make, Model 
+                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, e.Id AS EmployeeId
                                         FROM Computer c
-                                        WHERE Id = @id";
+                                        LEFT JOIN Employee e
+                                        ON c.Id = e.ComputerId
+                                        WHERE c.Id = @id";
 
                     cmd.Parameters.Add(new SqlParameter("@id", id));
 
                     var reader = cmd.ExecuteReader();
-                    Computer computer = null;
+                    ComputerViewModel computer = null;
 
                     if (reader.Read())
                     {
-                        computer = new Computer
+                        computer = new ComputerViewModel
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
@@ -198,6 +238,11 @@ namespace BangazonWorkforce.Controllers
                         if (!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
                         {
                             computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
+                        }
+
+                        if (!reader.IsDBNull(reader.GetOrdinal("EmployeeId")))
+                        {
+                            computer.EmployeeId = reader.GetInt32(reader.GetOrdinal("EmployeeId"));
                         }
                     }
                     reader.Close();
