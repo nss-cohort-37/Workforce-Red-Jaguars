@@ -106,8 +106,20 @@ namespace BangazonWorkforce.Controllers
 
                         var id = (int)cmd.ExecuteScalar();
                         computer.Id = id;
+                        
+                        if (computer.EmployeeId != 0)
+                        {
+                            cmd.CommandText = @"UPDATE Employee
+                                                SET ComputerId = @computerId
+                                                WHERE Id = @id";
 
-                        return RedirectToAction(nameof(Index));
+                            cmd.Parameters.Add(new SqlParameter("@computerId", computer.Id));
+                            cmd.Parameters.Add(new SqlParameter("@id", computer.EmployeeId));
+                            cmd.ExecuteNonQuery();
+
+                        }
+
+                            return RedirectToAction(nameof(Index));
                     }
                 }
 

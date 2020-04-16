@@ -29,7 +29,7 @@
             <div class="form-group">
                 <label asp-for="EmployeeId" class="control-label"></label>
                 <select asp-for="EmployeeId" asp-items="@Model.EmployeeOptions" class="form-control">
-                    <option value="0" disabled hidden>Please Select an Employee</option>
+                    <option value="0" hidden>Assign to Employee (Optional)...</option>
                 </select>
                 <span asp-validation-for="EmployeeId" class="text-danger"></span>
             </div>
