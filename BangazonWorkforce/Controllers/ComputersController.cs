@@ -80,17 +80,35 @@ namespace BangazonWorkforce.Controllers
         // POST: Computers/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Computer computer)
         {
             try
             {
-                // TODO: Add insert logic here
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"INSERT INTO Computer (Make, Model, PurchaseDate)
+                                            OUTPUT INSERTED.Id
+                                            VALUES (@make, @model, @purchaseDate)";
 
-                return RedirectToAction(nameof(Index));
+                        cmd.Parameters.Add(new SqlParameter("@make", computer.Make));
+                        cmd.Parameters.Add(new SqlParameter("@model", computer.Model));
+                        cmd.Parameters.Add(new SqlParameter("@purchaseDate", computer.PurchaseDate));
+
+                        var id = (int)cmd.ExecuteScalar();
+                        computer.Id = id;
+
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
+
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(computer);
             }
         }
 
