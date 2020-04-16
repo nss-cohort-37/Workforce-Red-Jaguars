@@ -6,6 +6,7 @@ using BangazonWorkforce.Models;
 using BangazonWorkforce.Models.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
@@ -36,8 +37,9 @@ namespace BangazonWorkforce.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, PurchaseDate, DecomissionDate, Make, Model
-                                        FROM Computer";
+                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, e.Id AS EmployeeId, e.FirstName, e.LastName, e.ComputerId, e.Email, e.IsSupervisor, e.DepartmentId
+                                        FROM Computer c
+                                        LEFT JOIN Employee e ON c.Id = e.ComputerId";
 
                     var reader = cmd.ExecuteReader();
                     var computers = new List<Computer>();
@@ -50,6 +52,22 @@ namespace BangazonWorkforce.Controllers
                             PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
                             Make = reader.GetString(reader.GetOrdinal("Make")),
                             Model = reader.GetString(reader.GetOrdinal("Model"))
+                        };
+                            
+                        if (!reader.IsDBNull(reader.GetOrdinal("ComputerId")))
+                        {
+                           Employee employee = new Employee
+                           {
+                                    Id = reader.GetInt32(reader.GetOrdinal("EmployeeId")),
+                                    FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                    Email = reader.GetString(reader.GetOrdinal("Email")),
+                                    IsSupervisor = reader.GetBoolean(reader.GetOrdinal("IsSupervisor")),
+                                    ComputerId = reader.GetInt32(reader.GetOrdinal("ComputerId")),
+                                    DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId"))
+                           };
+
+                            computer.Employee = employee;
                         };
 
                         if (!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
@@ -75,13 +93,18 @@ namespace BangazonWorkforce.Controllers
         // GET: Computers/Create
         public ActionResult Create()
         {
-            return View();
+            var employeeOptions = GetEmployeeOptions();
+            var viewModel = new ComputerViewModel()
+            {
+                EmployeeOptions = employeeOptions
+            };
+            return View(viewModel);
         }
 
         // POST: Computers/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Computer computer)
+        public ActionResult Create(ComputerViewModel computer)
         {
             try
             {
@@ -100,8 +123,20 @@ namespace BangazonWorkforce.Controllers
 
                         var id = (int)cmd.ExecuteScalar();
                         computer.Id = id;
+                        
+                        if (computer.EmployeeId != 0)
+                        {
+                            cmd.CommandText = @"UPDATE Employee
+                                                SET ComputerId = @computerId
+                                                WHERE Id = @id";
 
-                        return RedirectToAction(nameof(Index));
+                            cmd.Parameters.Add(new SqlParameter("@computerId", computer.Id));
+                            cmd.Parameters.Add(new SqlParameter("@id", computer.EmployeeId));
+                            cmd.ExecuteNonQuery();
+
+                        }
+
+                            return RedirectToAction(nameof(Index));
                     }
                 }
 
@@ -247,6 +282,34 @@ namespace BangazonWorkforce.Controllers
                     }
                     reader.Close();
                     return computer;
+                }
+            }
+        }
+        private List<SelectListItem> GetEmployeeOptions()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Id, CONCAT(FirstName, ' ', LastName) AS Name FROM Employee";
+
+                    var reader = cmd.ExecuteReader();
+                    var options = new List<SelectListItem>();
+
+                    while (reader.Read())
+                    {
+                        var option = new SelectListItem()
+                        {
+                            Text = reader.GetString(reader.GetOrdinal("Name")),
+                            Value = reader.GetInt32(reader.GetOrdinal("Id")).ToString()
+                        };
+
+                        options.Add(option);
+
+                    }
+                    reader.Close();
+                    return options;
                 }
             }
         }
