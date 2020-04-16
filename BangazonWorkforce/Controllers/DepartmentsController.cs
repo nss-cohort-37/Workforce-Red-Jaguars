@@ -51,8 +51,6 @@ namespace BangazonWorkforce.Controllers
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             Budget = reader.GetInt32(reader.GetOrdinal("Budget")),
                             EmployeeCount=reader.GetInt32(reader.GetOrdinal("EmployeeCount"))
-                           
-
                         };
                         departments.Add(department);
                     }
