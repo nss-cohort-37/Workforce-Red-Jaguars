@@ -34,7 +34,7 @@
                 @Html.ActionLink(item.Make + " " + item.Model, "Details", new { id = item.Id })
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Employee.FirstName + item.Employee.LastName)
+                @Html.DisplayFor(modelItem => item.Employee.FirstName) @Html.DisplayFor(modelItem => item.Employee.LastName)
             </td>
         </tr>
 }
