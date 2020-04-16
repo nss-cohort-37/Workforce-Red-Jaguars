@@ -19,10 +19,7 @@
                 Make & Model
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PurchaseDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DecomissionDate)
+                Assigned Employee
             </th>
             <th></th>
         </tr>
@@ -37,12 +34,7 @@
                 @Html.ActionLink(item.Make + " " + item.Model, "Details", new { id = item.Id })
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PurchaseDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DecomissionDate)
-            </td>
-            <td>
+                @Html.DisplayFor(modelItem => item.Employee.FirstName + item.Employee.LastName)
             </td>
         </tr>
 }

@@ -37,8 +37,9 @@ namespace BangazonWorkforce.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, PurchaseDate, DecomissionDate, Make, Model
-                                        FROM Computer";
+                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, e.Id AS EmployeeId, e.FirstName, e.LastName
+                                        FROM Computer c
+                                        LEFT JOIN Employee e ON c.Id = e.ComputerId";
 
                     var reader = cmd.ExecuteReader();
                     var computers = new List<Computer>();
@@ -50,7 +51,13 @@ namespace BangazonWorkforce.Controllers
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
                             Make = reader.GetString(reader.GetOrdinal("Make")),
-                            Model = reader.GetString(reader.GetOrdinal("Model"))
+                            Model = reader.GetString(reader.GetOrdinal("Model")),
+                            Employee = new Employee
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("EmployeeId")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            }
                         };
 
                         if (!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
