@@ -30,16 +30,30 @@ namespace BangazonWorkforce.Controllers
         }
 
         // GET: Computers
-        public ActionResult Index()
+        public ActionResult Index(string makeSearchString, string modelSearchString)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, e.Id AS EmployeeId, e.FirstName, e.LastName, e.ComputerId, e.Email, e.IsSupervisor, e.DepartmentId
+                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model,
+                                        e.Id AS EmployeeId, e.FirstName, e.LastName, e.ComputerId
                                         FROM Computer c
-                                        LEFT JOIN Employee e ON c.Id = e.ComputerId";
+                                        LEFT JOIN Employee e ON c.Id = e.ComputerId
+                                        WHERE 1 = 1";
+
+                    if (!String.IsNullOrEmpty(makeSearchString))
+                    {
+                        cmd.CommandText += "AND c.Make LIKE @makeSearchString";
+                        cmd.Parameters.Add(new SqlParameter("@makeSearchString", "%" + makeSearchString + "%"));
+                    }
+
+                    if (!String.IsNullOrEmpty(modelSearchString))
+                    {
+                        cmd.CommandText += " AND c.Model LIKE @modelSearchString";
+                        cmd.Parameters.Add(new SqlParameter("@modelSearchString", "%" + modelSearchString + "%"));
+                    }
 
                     var reader = cmd.ExecuteReader();
                     var computers = new List<Computer>();
@@ -61,10 +75,6 @@ namespace BangazonWorkforce.Controllers
                                     Id = reader.GetInt32(reader.GetOrdinal("EmployeeId")),
                                     FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                                     LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                                    IsSupervisor = reader.GetBoolean(reader.GetOrdinal("IsSupervisor")),
-                                    ComputerId = reader.GetInt32(reader.GetOrdinal("ComputerId")),
-                                    DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId"))
                            };
 
                             computer.Employee = employee;
@@ -249,7 +259,8 @@ namespace BangazonWorkforce.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, e.Id AS EmployeeId
+                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model,
+                                        e.Id AS EmployeeId, e.FirstName, e.LastName
                                         FROM Computer c
                                         LEFT JOIN Employee e
                                         ON c.Id = e.ComputerId
@@ -278,6 +289,13 @@ namespace BangazonWorkforce.Controllers
                         if (!reader.IsDBNull(reader.GetOrdinal("EmployeeId")))
                         {
                             computer.EmployeeId = reader.GetInt32(reader.GetOrdinal("EmployeeId"));
+                            Employee employee = new Employee
+                            {
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            };
+
+                            computer.Employee = employee;
                         }
                     }
                     reader.Close();

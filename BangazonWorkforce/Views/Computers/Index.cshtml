@@ -9,6 +9,17 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-controller="Computers" asp-action="Index">
+    <p>
+        Search by Make: <input type="text" name="makeSearchString">
+    </p>
+    <p>
+        Search by Model: <input type="text" name="modelSearchString">
+    </p>
+        <input type="submit" value="Search" />
+</form>
+
 <table class="table">
     <thead>
         <tr>
