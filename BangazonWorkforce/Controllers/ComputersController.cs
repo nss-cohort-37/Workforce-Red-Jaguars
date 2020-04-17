@@ -246,7 +246,8 @@ namespace BangazonWorkforce.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, e.Id AS EmployeeId
+                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, 
+                                        e.Id AS EmployeeId, e.FirstName, e.LastName
                                         FROM Computer c
                                         LEFT JOIN Employee e
                                         ON c.Id = e.ComputerId
@@ -275,6 +276,13 @@ namespace BangazonWorkforce.Controllers
                         if (!reader.IsDBNull(reader.GetOrdinal("EmployeeId")))
                         {
                             computer.EmployeeId = reader.GetInt32(reader.GetOrdinal("EmployeeId"));
+                            Employee employee = new Employee
+                            {
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            };
+
+                            computer.Employee = employee;
                         }
                     }
                     reader.Close();
