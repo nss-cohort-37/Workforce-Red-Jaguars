@@ -38,7 +38,39 @@ namespace BangazonWorkforce.Controllers
                 {
                     cmd.CommandText = @"SELECT Id, Name, StartDate, EndDate, MaxAttendees
                                         FROM TrainingProgram
-                                        WHERE StartDate > GetDate()";
+                                        WHERE EndDate > GetDate()";
+
+                    var reader = cmd.ExecuteReader();
+                    var trainingPrograms = new List<TrainingProgram>();
+
+                    while (reader.Read())
+                    {
+                        var trainingProgram = new TrainingProgram()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                            StartDate = reader.GetDateTime(reader.GetOrdinal("StartDate")),
+                            EndDate = reader.GetDateTime(reader.GetOrdinal("EndDate")),
+                            MaxAttendees = reader.GetInt32(reader.GetOrdinal("MaxAttendees"))
+                        };
+                        trainingPrograms.Add(trainingProgram);
+                    }
+                    reader.Close();
+                    return View(trainingPrograms);
+                }
+            }
+        }
+
+        public ActionResult PastIndex()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id, Name, StartDate, EndDate, MaxAttendees
+                                        FROM TrainingProgram
+                                        WHERE EndDate < GetDate()";
 
                     var reader = cmd.ExecuteReader();
                     var trainingPrograms = new List<TrainingProgram>();
@@ -198,25 +230,81 @@ namespace BangazonWorkforce.Controllers
         // GET: TrainingPrograms/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id, Name, StartDate, EndDate, MaxAttendees
+                                        FROM TrainingProgram
+                                        WHERE Id = @id";
+
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                    var reader = cmd.ExecuteReader();
+                    DateTime DateTimeNow = DateTime.Now;
+                    TrainingProgram trainingProgram = null;
+
+                    if (reader.Read())
+                    {
+                        if (reader.IsDBNull(reader.GetOrdinal("Id")))
+                        {
+                            return NotFound();
+                        }
+                        else if (reader.GetDateTime(reader.GetOrdinal("StartDate")) < DateTimeNow)
+                        {
+                            return NotFound();
+                        }
+
+                        trainingProgram = new TrainingProgram
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                            StartDate = reader.GetDateTime(reader.GetOrdinal("StartDate")),
+                            EndDate = reader.GetDateTime(reader.GetOrdinal("EndDate")),
+                            MaxAttendees = reader.GetInt32(reader.GetOrdinal("MaxAttendees"))
+                        };
+                    }
+                    reader.Close();
+                    if (trainingProgram == null)
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        return View(trainingProgram);
+                    }
+                }
+            }
         }
 
         // POST: TrainingPrograms/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, TrainingProgram trainginProgram)
         {
             try
             {
-                // TODO: Add delete logic here
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"DELETE FROM TrainingProgram WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
 
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(trainginProgram);
             }
         }
+
         private TrainingProgramViewModel GetTrainingProgramViewModel(int id)
         {
             using (SqlConnection conn = Connection)
