@@ -30,7 +30,7 @@ namespace BangazonWorkforce.Controllers
         }
 
         // GET: Computers
-        public ActionResult Index()
+        public ActionResult Index(string searchString)
         {
             using (SqlConnection conn = Connection)
             {
@@ -40,7 +40,14 @@ namespace BangazonWorkforce.Controllers
                     cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, 
                                         e.Id AS EmployeeId, e.FirstName, e.LastName, e.ComputerId
                                         FROM Computer c
-                                        LEFT JOIN Employee e ON c.Id = e.ComputerId";
+                                        LEFT JOIN Employee e ON c.Id = e.ComputerId
+                                        WHERE 1 = 1";
+
+                    if (!String.IsNullOrEmpty(searchString))
+                    {
+                        cmd.CommandText += "AND c.Make LIKE @searchString OR c.Model LIKE @searchString";
+                        cmd.Parameters.Add(new SqlParameter("@searchString", "%" + searchString + "%"));
+                    }
 
                     var reader = cmd.ExecuteReader();
                     var computers = new List<Computer>();
