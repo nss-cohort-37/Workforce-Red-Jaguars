@@ -30,23 +30,29 @@ namespace BangazonWorkforce.Controllers
         }
 
         // GET: Computers
-        public ActionResult Index(string searchString)
+        public ActionResult Index(string makeSearchString, string modelSearchString)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, 
+                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model,
                                         e.Id AS EmployeeId, e.FirstName, e.LastName, e.ComputerId
                                         FROM Computer c
                                         LEFT JOIN Employee e ON c.Id = e.ComputerId
                                         WHERE 1 = 1";
 
-                    if (!String.IsNullOrEmpty(searchString))
+                    if (!String.IsNullOrEmpty(makeSearchString))
                     {
-                        cmd.CommandText += "AND c.Make LIKE @searchString OR c.Model LIKE @searchString";
-                        cmd.Parameters.Add(new SqlParameter("@searchString", "%" + searchString + "%"));
+                        cmd.CommandText += "AND c.Make LIKE @makeSearchString";
+                        cmd.Parameters.Add(new SqlParameter("@makeSearchString", "%" + makeSearchString + "%"));
+                    }
+
+                    if (!String.IsNullOrEmpty(modelSearchString))
+                    {
+                        cmd.CommandText += " AND c.Model LIKE @modelSearchString";
+                        cmd.Parameters.Add(new SqlParameter("@modelSearchString", "%" + modelSearchString + "%"));
                     }
 
                     var reader = cmd.ExecuteReader();
@@ -253,7 +259,7 @@ namespace BangazonWorkforce.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model, 
+                    cmd.CommandText = @"SELECT c.Id, c.PurchaseDate, c.DecomissionDate, c.Make, c.Model,
                                         e.Id AS EmployeeId, e.FirstName, e.LastName
                                         FROM Computer c
                                         LEFT JOIN Employee e
