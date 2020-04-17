@@ -69,3 +69,17 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+.link-container {
+    width: 100%;
+}
+
+.align-left {
+    float: left;
+    width: 50%;
+}
+
+.align-right {
+    float: right;
+    width: 50%;
+}

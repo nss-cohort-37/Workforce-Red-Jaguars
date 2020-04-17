@@ -1,0 +1,50 @@
+﻿@model IEnumerable<BangazonWorkforce.Models.TrainingProgram>
+
+@{
+    ViewData["Title"] = "PastIndex";
+}
+
+<h1>Past Training Programs</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-right"><a asp-action="Index">View Upcoming Programs</a></div>
+    </div>
+</div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Program Name
+                    </th>
+                    <th>
+                        Start Date
+                    </th>
+                    <th>
+                        End Date
+                    </th>
+                    <th>
+                        Max Attendees
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.Name, "Details", new { id = item.Id })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StartDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EndDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaxAttendees)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
