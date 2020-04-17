@@ -14,6 +14,7 @@ namespace BangazonWorkforce.Models.ViewModel
         public string Make { get; set; }
         public string Model { get; set; }
         public int? EmployeeId { get; set; }
+        public Employee? Employee { get; set; }
         public List<SelectListItem> EmployeeOptions { get; set; }
     }
 }
