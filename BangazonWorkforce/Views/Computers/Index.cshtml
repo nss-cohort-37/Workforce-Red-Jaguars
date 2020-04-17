@@ -10,15 +10,17 @@
     <a asp-action="Create">Create New</a>
 </p>
 
-<form asp-controller="Computers" asp-action="Index">
-    <p>
-        Search by Make: <input type="text" name="makeSearchString">
-    </p>
-    <p>
-        Search by Model: <input type="text" name="modelSearchString">
-    </p>
+    <form asp-controller="Computers" asp-action="Index">
+        <p>
+            Search by Make: <input type="text" name="makeSearchString">
+        </p>
+        <p>
+            Search by Model: <input type="text" name="modelSearchString">
+        </p>
         <input type="submit" value="Search" />
-</form>
+        <input type="button" value="Reset" onclick="location.href='/Computers'" />
+    </form>
+        <br />
 
 <table class="table">
     <thead>
@@ -36,18 +38,19 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.ActionLink(item.Make + " " + item.Model, "Details", new { id = item.Id })
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Employee.FirstName) @Html.DisplayFor(modelItem => item.Employee.LastName)
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.ActionLink(item.Make + " " + item.Model, "Details", new { id = item.Id })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Employee.FirstName) @Html.DisplayFor(modelItem => item.Employee.LastName)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
