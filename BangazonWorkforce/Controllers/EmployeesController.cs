@@ -126,6 +126,80 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+        public ActionResult AssignTraining(int id)
+        {
+            var trainingOptions = GetAvaialbleTrainingOptions(id);
+            var viewModel = new EmployeeTrainingViewModel()
+            {
+                AvailableTrainingPrograms = trainingOptions
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AssignTraining(EmployeeTrainingViewModel employee)
+        {
+            try
+            {
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+
+
+                        cmd.CommandText = @"INSERT INTO EmployeeTraining (EmployeeId, TrainingProgramId)
+                                            VALUES ";
+                                            for (int index = 0; index < employee.TrainingProgramIds.Count; index++)
+                                            {
+                                            if (index == (employee.TrainingProgramIds.Count - 1))
+                                            {
+                                                cmd.CommandText += "(@employeeId, @trainingProgramId)";
+                                            }
+                                            else
+                                            {
+                                                cmd.CommandText += "(@employeeId, @trainingProgramId), ";
+                                            }
+
+                                            cmd.Parameters.Add(new SqlParameter("@trainingProgramId", employee.TrainingProgramIds.ElementAt(index)));
+                                            }
+                                            cmd.Parameters.Add(new SqlParameter("@employeeId", employee.Id));
+
+                        cmd.ExecuteNonQuery();
+
+                        return RedirectToAction(nameof(Details), new { id = employee.Id });
+
+                        //INSERT INTO sales.promotions(
+                        //    promotion_name,
+                        //    discount,
+                        //    start_date,
+                        //    expired_date
+                        //)
+                        //VALUES
+                        //    (
+                        //        '2019 Summer Promotion',
+                        //        0.15,
+                        //        '20190601',
+                        //        '20190901'
+                        //    ),
+                        //    (
+                        //        '2019 Fall Promotion',
+                        //        0.20,
+                        //        '20191001',
+                        //        '20191101'
+                        //    )
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                return View(employee);
+            }
+        }
+
         // GET: Employees/Edit/5
         public ActionResult Edit(int id)
         {
@@ -242,6 +316,42 @@ namespace BangazonWorkforce.Controllers
                 }
             }
         }
+        private List<SelectListItem> GetAvaialbleTrainingOptions(int? id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT tp.Id, tp.[Name], tp.StartDate, tp.EndDate, (tp.MaxAttendees - COUNT(et.EmployeeId)) AS AvailableSeats
+                                      FROM TrainingProgram tp
+                                      LEFT JOIN EmployeeTraining et ON et.TrainingProgramId = tp.Id
+                                      LEFT JOIN Employee e ON et.EmployeeId = e.Id
+                                      WHERE tp.StartDate > GetDate() AND(et.EmployeeId != @id OR et.EmployeeId IS NULL)
+                                      GROUP BY tp.Id, tp.[Name], tp.StartDate, tp.EndDate, tp.MaxAttendees
+                                      HAVING(tp.MaxAttendees - COUNT(et.EmployeeId)) > 0";
+                    
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                    var reader = cmd.ExecuteReader();
+                    var options = new List<SelectListItem>();
+
+                    while (reader.Read())
+                    {
+                        var option = new SelectListItem()
+                        {
+                            Text = reader.GetString(reader.GetOrdinal("Name")),
+                            Value = reader.GetInt32(reader.GetOrdinal("Id")).ToString()
+                        };
+
+                        options.Add(option);
+                    }
+                    reader.Close();
+                    return options;
+                }
+            }
+        }
+
         private List<SelectListItem> GetComputerOptions(int? id)
         {
             using (SqlConnection conn = Connection)
@@ -277,6 +387,7 @@ namespace BangazonWorkforce.Controllers
                 }
             }
         }
+
         private Employee GetEmployeeById(int id)
         {
             using (SqlConnection conn = Connection)
