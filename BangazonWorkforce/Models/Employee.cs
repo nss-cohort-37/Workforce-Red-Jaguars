@@ -16,5 +16,6 @@ namespace BangazonWorkforce.Models
         public int ComputerId { get; set; }
         public Department Department { get; set; }
         public Computer Computer { get; set; }
+        public List<TrainingProgram> TrainingPrograms { get; set; }
     }
 }
