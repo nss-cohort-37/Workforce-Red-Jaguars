@@ -148,51 +148,20 @@ namespace BangazonWorkforce.Controllers
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
 
+                        for (int index = 0; index < employee.TrainingProgramIds.Count; index++)
+                        {
+                            cmd.CommandText = @"INSERT INTO EmployeeTraining (EmployeeId, TrainingProgramId)
+                                            VALUES (@employeeId, @trainingProgramId)";
 
-                        cmd.CommandText = @"INSERT INTO EmployeeTraining (EmployeeId, TrainingProgramId)
-                                            VALUES ";
-                                            for (int index = 0; index < employee.TrainingProgramIds.Count; index++)
-                                            {
-                                            if (index == (employee.TrainingProgramIds.Count - 1))
-                                            {
-                                                cmd.CommandText += "(@employeeId, @trainingProgramId)";
-                                            }
-                                            else
-                                            {
-                                                cmd.CommandText += "(@employeeId, @trainingProgramId), ";
-                                            }
-
-                                            cmd.Parameters.Add(new SqlParameter("@trainingProgramId", employee.TrainingProgramIds.ElementAt(index)));
-                                            }
                                             cmd.Parameters.Add(new SqlParameter("@employeeId", employee.Id));
-
-                        cmd.ExecuteNonQuery();
-
+                                            cmd.Parameters.Add(new SqlParameter("@trainingProgramId", employee.TrainingProgramIds.ElementAt(index)));
+                                            
+                                            cmd.ExecuteNonQuery();
+                            cmd.Parameters.Clear();
+                        }
                         return RedirectToAction(nameof(Details), new { id = employee.Id });
-
-                        //INSERT INTO sales.promotions(
-                        //    promotion_name,
-                        //    discount,
-                        //    start_date,
-                        //    expired_date
-                        //)
-                        //VALUES
-                        //    (
-                        //        '2019 Summer Promotion',
-                        //        0.15,
-                        //        '20190601',
-                        //        '20190901'
-                        //    ),
-                        //    (
-                        //        '2019 Fall Promotion',
-                        //        0.20,
-                        //        '20191001',
-                        //        '20191101'
-                        //    )
                     }
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -324,12 +293,12 @@ namespace BangazonWorkforce.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"SELECT tp.Id, tp.[Name], tp.StartDate, tp.EndDate, (tp.MaxAttendees - COUNT(et.EmployeeId)) AS AvailableSeats
-                                      FROM TrainingProgram tp
-                                      LEFT JOIN EmployeeTraining et ON et.TrainingProgramId = tp.Id
-                                      LEFT JOIN Employee e ON et.EmployeeId = e.Id
-                                      WHERE tp.StartDate > GetDate() AND(et.EmployeeId != @id OR et.EmployeeId IS NULL)
-                                      GROUP BY tp.Id, tp.[Name], tp.StartDate, tp.EndDate, tp.MaxAttendees
-                                      HAVING(tp.MaxAttendees - COUNT(et.EmployeeId)) > 0";
+                                        FROM TrainingProgram tp
+                                        LEFT JOIN EmployeeTraining et ON et.TrainingProgramId = tp.Id
+                                        LEFT JOIN Employee e ON et.EmployeeId = e.Id
+                                        WHERE tp.StartDate > GetDate() OR et.EmployeeId IS NULL
+                                        GROUP BY tp.Id, tp.[Name], tp.StartDate, tp.EndDate, tp.MaxAttendees
+                                        HAVING(tp.MaxAttendees - COUNT(et.EmployeeId)) > 0 AND tp.Id NOT IN (SELECT TrainingProgramId FROM EmployeeTraining WHERE EmployeeTraining.EmployeeId = @id)";
                     
                     cmd.Parameters.Add(new SqlParameter("@id", id));
 
