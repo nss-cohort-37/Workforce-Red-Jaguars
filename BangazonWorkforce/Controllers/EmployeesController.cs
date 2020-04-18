@@ -131,6 +131,7 @@ namespace BangazonWorkforce.Controllers
             var trainingOptions = GetAvaialbleTrainingOptions(id);
             var viewModel = new EmployeeTrainingViewModel()
             {
+                Id = id,
                 AvailableTrainingPrograms = trainingOptions
             };
             return View(viewModel);
@@ -140,6 +141,7 @@ namespace BangazonWorkforce.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AssignTraining(EmployeeTrainingViewModel employee)
         {
+            bool isEmpty = !employee.TrainingProgramIds.Any();
             try
             {
                 using (SqlConnection conn = Connection)
@@ -147,19 +149,25 @@ namespace BangazonWorkforce.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-
-                        for (int index = 0; index < employee.TrainingProgramIds.Count; index++)
+                        if (isEmpty)
                         {
-                            cmd.CommandText = @"INSERT INTO EmployeeTraining (EmployeeId, TrainingProgramId)
-                                            VALUES (@employeeId, @trainingProgramId)";
-
-                                            cmd.Parameters.Add(new SqlParameter("@employeeId", employee.Id));
-                                            cmd.Parameters.Add(new SqlParameter("@trainingProgramId", employee.TrainingProgramIds.ElementAt(index)));
-                                            
-                                            cmd.ExecuteNonQuery();
-                            cmd.Parameters.Clear();
+                            return RedirectToAction(nameof(Details), new { id = employee.Id });
                         }
-                        return RedirectToAction(nameof(Details), new { id = employee.Id });
+                        else
+                        {
+                            for (int index = 0; index < employee.TrainingProgramIds.Count; index++)
+                            {
+                                cmd.CommandText = @"INSERT INTO EmployeeTraining (EmployeeId, TrainingProgramId)
+                                                VALUES (@employeeId, @trainingProgramId)";
+
+                                                cmd.Parameters.Add(new SqlParameter("@employeeId", employee.Id));
+                                                cmd.Parameters.Add(new SqlParameter("@trainingProgramId", employee.TrainingProgramIds.ElementAt(index)));
+                                            
+                                                cmd.ExecuteNonQuery();
+                                cmd.Parameters.Clear();
+                            }
+                            return RedirectToAction(nameof(Details), new { id = employee.Id });
+                        }
                     }
                 }
             }

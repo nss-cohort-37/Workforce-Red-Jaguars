@@ -45,8 +45,8 @@
         </ol>
     </dl>
 </div>
-<div>@Html.ActionLink("Assign To Training Program", "AssignTraining", new { Model.Id })</div>
+<div>@Html.ActionLink("Assign To Training Program", "AssignTraining", new { Model.Id }, new { @class = "btn btn-info btn-sm mb-1" })</div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { Model.Id }) |
-    <a asp-action="Index">Back to List</a>
+    @Html.ActionLink("Edit", "Edit", new { Model.Id }, new { @class = "btn btn-primary btn-sm"})
+    <a asp-action="Index" class="btn btn-secondary btn-sm text-dark">Back to List</a>
 </div>
