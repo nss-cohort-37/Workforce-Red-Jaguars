@@ -44,11 +44,11 @@
 <div>
     @if (Model.EmployeeId == null)
     {
-        @Html.ActionLink("Delete", "Delete", new { id = Model.Id }) <span>|</span>
+        @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { @class = "btn btn-outline-danger btn-sm" }) 
     }
     @if (Model.EmployeeId != null)
     {
     <p>❌ Cannot be deleted (assigned to @Html.DisplayFor(model => model.Employee.FirstName) @Html.DisplayFor(model => model.Employee.LastName))</p>
     }
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-secondary text-dark btn-sm">Back to List</a>
 </div>

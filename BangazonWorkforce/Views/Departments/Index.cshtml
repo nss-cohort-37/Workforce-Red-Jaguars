@@ -7,11 +7,11 @@
 <h1>Departments</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-secondary text-dark btn-sm">Create New</a>
 </p>
 <table class="table">
     <thead>
-        <tr>
+        <tr class="table-primary">
             <th>
                  Department           
             </th>
@@ -26,7 +26,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="table-secondary">
         
             <td>
                 @Html.ActionLink(item.Name, "Details", new { id = item.Id })

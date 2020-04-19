@@ -7,24 +7,22 @@
 <h1>Computers</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-secondary text-dark btn-sm">Create New</a>
 </p>
 
     <form asp-controller="Computers" asp-action="Index">
         <p>
-            Search by Make: <input type="text" name="makeSearchString">
+            Search by Make: <input type="text" name="makeSearchString" class="form-control form-inline w-25">
+            Search by Model: <input type="text" name="modelSearchString" class="form-control form-inline w-25">
         </p>
-        <p>
-            Search by Model: <input type="text" name="modelSearchString">
-        </p>
-        <input type="submit" value="Search" />
-        <input type="button" value="Reset" onclick="location.href='/Computers'" />
+        <input type="submit" value="Search" class="btn btn-primary btn-sm"/>
+        <input type="button" value="Reset" onclick="location.href='/Computers'" class="btn btn-secondary text-dark btn-sm"/>
     </form>
         <br />
 
 <table class="table">
     <thead>
-        <tr>
+        <tr class="table-primary">
             <th>
                 @Html.DisplayNameFor(model => model.Id)
             </th>
@@ -40,7 +38,7 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr class="table-secondary">
                 <td>
                     @Html.DisplayFor(modelItem => item.Id)
                 </td>
