@@ -126,6 +126,57 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+        public ActionResult AssignTraining(int id)
+        {
+            var trainingOptions = GetAvaialbleTrainingOptions(id);
+            var viewModel = new EmployeeTrainingViewModel()
+            {
+                Id = id,
+                AvailableTrainingPrograms = trainingOptions
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AssignTraining(EmployeeTrainingViewModel employee)
+        {
+            bool isEmpty = !employee.TrainingProgramIds.Any();
+            try
+            {
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        if (isEmpty)
+                        {
+                            return RedirectToAction(nameof(Details), new { id = employee.Id });
+                        }
+                        else
+                        {
+                            for (int index = 0; index < employee.TrainingProgramIds.Count; index++)
+                            {
+                                cmd.CommandText = @"INSERT INTO EmployeeTraining (EmployeeId, TrainingProgramId)
+                                                VALUES (@employeeId, @trainingProgramId)";
+
+                                                cmd.Parameters.Add(new SqlParameter("@employeeId", employee.Id));
+                                                cmd.Parameters.Add(new SqlParameter("@trainingProgramId", employee.TrainingProgramIds.ElementAt(index)));
+                                            
+                                                cmd.ExecuteNonQuery();
+                                cmd.Parameters.Clear();
+                            }
+                            return RedirectToAction(nameof(Details), new { id = employee.Id });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return View(employee);
+            }
+        }
+
         // GET: Employees/Edit/5
         public ActionResult Edit(int id)
         {
@@ -242,6 +293,42 @@ namespace BangazonWorkforce.Controllers
                 }
             }
         }
+        private List<SelectListItem> GetAvaialbleTrainingOptions(int? id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT tp.Id, tp.[Name], tp.StartDate, tp.EndDate, (tp.MaxAttendees - COUNT(et.EmployeeId)) AS AvailableSeats
+                                        FROM TrainingProgram tp
+                                        LEFT JOIN EmployeeTraining et ON et.TrainingProgramId = tp.Id
+                                        LEFT JOIN Employee e ON et.EmployeeId = e.Id
+                                        WHERE tp.StartDate > GetDate() OR et.EmployeeId IS NULL
+                                        GROUP BY tp.Id, tp.[Name], tp.StartDate, tp.EndDate, tp.MaxAttendees
+                                        HAVING(tp.MaxAttendees - COUNT(et.EmployeeId)) > 0 AND tp.Id NOT IN (SELECT TrainingProgramId FROM EmployeeTraining WHERE EmployeeTraining.EmployeeId = @id)";
+                    
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                    var reader = cmd.ExecuteReader();
+                    var options = new List<SelectListItem>();
+
+                    while (reader.Read())
+                    {
+                        var option = new SelectListItem()
+                        {
+                            Text = reader.GetString(reader.GetOrdinal("Name")),
+                            Value = reader.GetInt32(reader.GetOrdinal("Id")).ToString()
+                        };
+
+                        options.Add(option);
+                    }
+                    reader.Close();
+                    return options;
+                }
+            }
+        }
+
         private List<SelectListItem> GetComputerOptions(int? id)
         {
             using (SqlConnection conn = Connection)
@@ -277,6 +364,7 @@ namespace BangazonWorkforce.Controllers
                 }
             }
         }
+
         private Employee GetEmployeeById(int id)
         {
             using (SqlConnection conn = Connection)

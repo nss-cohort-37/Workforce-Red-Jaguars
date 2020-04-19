@@ -7,11 +7,11 @@
 <h1>Employees</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-secondary text-dark btn-sm">Create New</a>
 </p>
 <table class="table">
     <thead>
-        <tr>
+        <tr class="table-primary">
             <th>
                 Name
             </th>
@@ -23,18 +23,16 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="table-secondary">
             <td>
                 @Html.ActionLink(item.FirstName + ' ' + item.LastName, "Details", new { id = item.Id })
             </td>
 
-            <td>
+            <td class="pb-0">
                 @Html.DisplayFor(modelItem => item.Department.Name)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id=item.Id }) @*|*@
-                @*@Html.ActionLink("Details", "Details", new { id=item.Id }) |*@
-                @*@Html.ActionLink("Delete", "Delete", new { id=item.Id })*@
             </td>
         </tr>
 }

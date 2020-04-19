@@ -1,0 +1,42 @@
+﻿@model BangazonWorkforce.Models.ViewModel.EmployeeTrainingViewModel
+
+@{
+    ViewData["Title"] = "AssignTraining";
+}
+
+<h1>Assign Training</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AssignTraining">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (Model.AvailableTrainingPrograms.Count == 0)
+            {
+                <p>There are no future training programs currently avaialble for this employee.</p>
+            }
+            else
+            {
+                <label>Available Training Programs</label>
+                <select asp-for="TrainingProgramIds" asp-items="@Model.AvailableTrainingPrograms" multiple>
+                </select>
+            }
+            @if (Model.AvailableTrainingPrograms.Count == 0)
+            {
+                <div class="form-group">
+                    <a asp-controller="Employees" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary text-dark">Back to Details</a>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" /> <a asp-controller="Employees" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary text-dark">Back to Details</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

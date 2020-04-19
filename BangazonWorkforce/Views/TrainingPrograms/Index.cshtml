@@ -8,13 +8,13 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-6 text-left"><a asp-action="Create">Create New</a></div>
-        <div class="col-md-6 text-right"><a asp-action="PastIndex">View Past Programs</a></div>
+        <div class="col-md-6 text-left"><a asp-action="Create" class="btn btn-secondary text-dark btn-sm mb-3">Create New</a></div>
+        <div class="col-md-6 text-right"><a asp-action="PastIndex" class="btn btn-primary btn-sm mb-3">View Past Programs</a></div>
     </div>
 </div>
     <table class="table">
         <thead>
-            <tr>
+            <tr class="table-primary">
                 <th>
                     Program Name
                 </th>
@@ -32,7 +32,7 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
+                <tr class="table-secondary">
                     <td>
                         @Html.ActionLink(item.Name, "Details", new { id = item.Id })
                     </td>
